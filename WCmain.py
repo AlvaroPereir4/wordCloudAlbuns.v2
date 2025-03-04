@@ -6,7 +6,7 @@ def main():
     parser = WCParser()
     crawler = WCCrawler(parser)
     url = 'https://genius.com/albums/Kendrick-lamar/Damn'
-    wordcloud_data = crawler.run_rqs_get_wordcloud(url)
+    wordcloud_data = crawler.crawler(url)
     print("Dados extraídos para WordCloud:")
     print(wordcloud_data)
 

@@ -4,9 +4,16 @@ from matplotlib.colors import LinearSegmentedColormap
 from requests import Response
 from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
+import logging
 
 
 class WCParser:
+
+    def parser(self, song_lyrics: list):
+        album_lyric = self.get_album_lyrics(song_lyrics)
+
+        self.log_general_info(song_lyrics, album_lyric)
+        self.wordcloud_album(album_lyric)
 
     def element_list(self, tree, xpath_expression) -> dict:
         elements = tree.xpath(xpath_expression)
@@ -22,7 +29,7 @@ class WCParser:
     def remove_unsual_caracters(self, phrase: str) -> str:
         return re.sub(r'[^a-zA-Z\s]', '', phrase)
 
-    def wordcloud_album(self, lyric_text: str) -> WordCloud:
+    def wordcloud_album(self, lyric_text: str):
         colors = ["#A93830", "#F28E37", "#CD622B", '#88733C']
         cmap = LinearSegmentedColormap.from_list("mycmap", colors)
         wordcloud = WordCloud(
@@ -39,8 +46,7 @@ class WCParser:
         plt.imshow(wordcloud, interpolation='bilinear')
         plt.axis('off')
         plt.show()
-
-        return wordcloud
+        wordcloud.to_file("wordcloud.png")
 
     def get_song_titles(self, response: Response) -> list:
         tree = fromstring(response.text)
@@ -72,6 +78,14 @@ class WCParser:
             for dictionary in song_lyrics
             for valor in dictionary.values()
         ]
-
         album_lyric = ' ' + ' '.join(processed_values)
+
         return album_lyric
+
+    def log_general_info(self, song_lyrics: list, album_lyric: str):
+        logging.basicConfig(level=logging.INFO, format="%(message)s")
+        words = album_lyric.split()
+
+        logging.info(f"🎵 Quantity of songs: {len(song_lyrics)}")
+        logging.info(f"📖 Total words: {len(words)}")
+        logging.info(f"🔤 Unique words: {len(set(words))}")

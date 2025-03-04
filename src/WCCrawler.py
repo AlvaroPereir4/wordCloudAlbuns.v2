@@ -7,13 +7,11 @@ class WCCrawler:
     def __init__(self, parser: WCParser):
         self._parser = parser
 
-    def run_rqs_get_wordcloud(self, url: str):
-        response = requests.get(url)
-        titles = self._parser.get_song_titles(response)
+    def crawler(self, url: str):
+        main_response = requests.get(url)
+        titles = self._parser.get_song_titles(main_response)
         song_lyrics = self.song_lyrics_requests(titles)
-        album_lyric = self._parser.get_album_lyrics(song_lyrics)
-        wc = self._parser.wordcloud_album(album_lyric)
-        wc.to_file("wordcloud.png")
+        self._parser.parser(song_lyrics)
 
     def song_lyrics_requests(self, titles: list) -> list:
         song_lyrics = []
