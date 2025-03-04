@@ -3,8 +3,11 @@ from lxml.html import fromstring
 from matplotlib.colors import LinearSegmentedColormap
 from requests import Response
 from wordcloud import WordCloud, STOPWORDS
-import matplotlib.pyplot as plt
 import logging
+import matplotlib
+import matplotlib.pyplot as plt
+
+matplotlib.use('TkAgg')  # Usando o backend TkAgg, que suporta exibição interativa
 
 
 class WCParser:
@@ -89,3 +92,20 @@ class WCParser:
         logging.info(f"🎵 Quantity of songs: {len(song_lyrics)}")
         logging.info(f"📖 Total words: {len(words)}")
         logging.info(f"🔤 Unique words: {len(set(words))}")
+
+    def get_albums_from_response(self, albums: Response) -> str:
+        tree = fromstring(albums.text)
+        album_list = self.element_list(tree, '//div/h3/text()')  #todo nao ta retornando todos
+        album_list_formated = []
+        print("Artist albuns: ")
+
+        for idx, album in album_list.items():
+            album_name = album[0] if isinstance(album, list) else album
+            clean_album = ''.join(e for e in album_name if e.isalnum() or e.isspace())
+            album_list_formated.append(clean_album)
+            print(f"{idx}: {clean_album}")
+
+        album_id = int(input("Choose the album by number: "))
+        album_choose = album_list_formated[album_id]
+
+        return album_choose

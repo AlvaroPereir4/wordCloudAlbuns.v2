@@ -7,7 +7,8 @@ class WCCrawler:
     def __init__(self, parser: WCParser):
         self._parser = parser
 
-    def crawler(self, url: str):
+    def crawler(self):
+        url = self.get_url()
         main_response = requests.get(url)
         titles = self._parser.get_song_titles(main_response)
         song_lyrics = self.song_lyrics_requests(titles)
@@ -21,3 +22,12 @@ class WCCrawler:
             song_lyrics.append(self._parser.get_song_lyric(song_response))
 
         return song_lyrics
+
+    def get_url(self) -> str:
+        artist = input("Artist?")
+        url_albums = f'https://genius.com/artists/{artist}/albums'
+        albums_request = requests.get(url_albums)
+        album = self._parser.get_albums_from_response(albums_request)
+        url = f'https://genius.com/albums/{artist}/{album}'
+
+        return url
